@@ -1,0 +1,13 @@
+{
+  "_comment": "GANTI SEMUA NILAI DI BAWAH dengan config dari Firebase Console project PABEN.ID yang baru (Project settings > General > Your apps > Web app > SDK setup and configuration > Config). Alternatifnya, isi lewat Environment Variables di Vercel (VITE_FIREBASE_*) — env var akan menimpa file ini.",
+  "projectId": "paben-id",
+  "appId": "1:1093111915743:web:4ecad9c9ca424f8c1cb56a",
+  "apiKey": "AIzaSyA5X8IueZbukjFIYqNm5S5SUlfCFbZF52Q",
+  "authDomain": "paben-id.firebaseapp.com",
+  "firestoreDatabaseId": "",
+  "storageBucket": "paben-id.firebasestorage.app",
+  "messagingSenderId": "1093111915743",
+  "measurementId": "",
+  "oAuthClientId": "",
+  "recaptchaSiteKey": ""
+}

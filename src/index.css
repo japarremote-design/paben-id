@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/*
+ * Token merek PABEN.ID.
+ *
+ * Nilai aslinya ditulis dalam oklch di dokumen identitas; padanan hex
+ * disertakan di komentar supaya mudah dicocokkan saat mendesain.
+ *
+ * Aturan pakai jingga (dari dokumen identitas): jingga penuh HANYA untuk
+ * monogram, tombol langganan, dan label TERKINI. Blok besar lain memakai
+ * tinta hangat — oranye lama terlalu terang untuk bidang luas.
+ */
+@theme {
+  --color-jingga: oklch(0.635 0.185 44);   /* #E15B00 aksen utama */
+  --color-jingga-tua: oklch(0.50 0.155 42); /* #A63C00 tautan & hover */
+  --color-jingga-terang: oklch(0.78 0.13 50); /* #FA9D68 aksen di atas tinta */
+  --color-jingga-tipis: oklch(0.955 0.028 55); /* #FFECE0 latar tenang */
+  --color-tinta: oklch(0.17 0.02 30);      /* #170C0A teks & mode gelap */
+  --color-tinta-muda: oklch(0.26 0.025 30); /* #2F201D hover di atas tinta */
+  --color-abu-teks: oklch(0.52 0.012 45);  /* #6F6763 tagline & meta */
+  --color-kertas: oklch(0.975 0.006 70);   /* #F9F6F2 latar halaman */
+  --color-garis: oklch(0.90 0.006 60);     /* #E1DDDA border */
+
+  --font-sans: 'Barlow', system-ui, -apple-system, sans-serif;
+  --font-display: 'Barlow Condensed', 'Barlow', sans-serif;
+  --font-serif: 'Newsreader', Georgia, serif;
+
+  --animate-ticker: ticker 32s linear infinite;
+  --animate-fadeIn: fadeIn 0.18s ease-out;
+}
+
+/*
+ * Barlow untuk antarmuka, Barlow Condensed 800 untuk wordmark & judul,
+ * Newsreader italic untuk tagline & kutipan. Judul memakai tracking rapat
+ * karena Condensed pada ukuran besar terasa renggang kalau dibiarkan normal.
+ */
+body {
+  font-family: var(--font-sans);
+  background: var(--color-kertas);
+  color: var(--color-tinta);
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+.font-tagline {
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  /* Daftar judul dirender dua kali, jadi -50% = tepat satu putaran penuh. */
+  to { transform: translateX(-50%); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Hormati setelan perangkat yang meminta animasi dikurangi. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-ticker {
+    animation: none;
+  }
+}

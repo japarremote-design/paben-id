@@ -1,0 +1,6 @@
+{
+  "name": "PABEN.ID",
+  "description": "PABEN.ID - Berita Faktual, Terpercaya, Terkini. Portal berita real-time dengan autentikasi Google dan database Firestore.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
