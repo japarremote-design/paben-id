@@ -14,6 +14,7 @@ import { seedInitialArticlesIfEmpty } from './lib/seedData';
 import { seedCategoriesIfEmpty } from './lib/categories';
 import { Article, CategoryType, Category, NewsroomUser, SiteSettings, UserProfile } from './types';
 import { fetchNewsroomUser } from './lib/newsroom';
+import { useSeo } from './lib/seo';
 import { isNewsroomMember, isPublicallyVisible } from './lib/roles';
 import { resolveLogoUrl, subscribeSiteSettings } from './lib/settings';
 import { articlePath, idFromSlug } from './lib/slug';
@@ -47,14 +48,28 @@ import { BreakingTicker } from './components/BreakingTicker';
 import { Newsroom } from './components/Newsroom';
 import { NewsroomLogin } from './components/NewsroomLogin';
 import { StaticPageSlug, STATIC_PAGE_SLUGS } from './lib/staticPages';
+import { slugifyCategory, DEFAULT_CATEGORIES } from './lib/categories';
 
-export default function App({ newsroom = false }: { newsroom?: boolean }) {
+export default function App({
+  newsroom = false,
+  notFound = false,
+}: {
+  newsroom?: boolean;
+  notFound?: boolean;
+}) {
   const {
     id: articleIdParam,
     slug: articleSlugParam,
     tag: tagParam,
     pageSlug,
-  } = useParams<{ id?: string; slug?: string; tag?: string; pageSlug?: string }>();
+    kanalSlug,
+  } = useParams<{
+    id?: string;
+    slug?: string;
+    tag?: string;
+    pageSlug?: string;
+    kanalSlug?: string;
+  }>();
   const navigate = useNavigate();
 
   const [articles, setArticles] = useState<Article[]>([]);
@@ -74,7 +89,6 @@ export default function App({ newsroom = false }: { newsroom?: boolean }) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType | 'Semua'>('Semua');
   const [user, setUser] = useState<UserProfile | null>(null);
   const [newsroomUser, setNewsroomUser] = useState<NewsroomUser | null>(null);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
@@ -107,6 +121,34 @@ export default function App({ newsroom = false }: { newsroom?: boolean }) {
             ? lookupPool.find(a => articleSlugParam.endsWith(a.id)) ?? null
             : null)
     : null;
+
+  /*
+   * Kanal aktif diturunkan dari ALAMAT, bukan dari state.
+   *
+   * Sebelumnya memilih kanal hanya mengubah state — alamatnya tetap "/", jadi
+   * tidak ada satu pun halaman kanal yang bisa diindeks mesin pencari, dan
+   * pembaca tidak bisa menyalin tautan "berita ekonomi" ke siapa pun. Dengan
+   * diturunkan dari alamat, setiap kanal jadi halaman sungguhan yang punya
+   * judul, canonical, dan tempat sendiri di sitemap.
+   *
+   * Daftar kategori datang dari Firestore dan belum ada saat render pertama.
+   * Selama itu kita cocokkan ke DEFAULT_CATEGORIES supaya kanal tidak
+   * berkedip ke "Semua" dulu sebelum isinya muncul.
+   */
+  const kanalPool = activeCategoryNames.length ? activeCategoryNames : DEFAULT_CATEGORIES;
+  const matchedKanal = kanalSlug
+    ? kanalPool.find(name => slugifyCategory(name) === kanalSlug) ?? null
+    : null;
+  const selectedCategory: CategoryType | 'Semua' =
+    (matchedKanal as CategoryType | null) ?? 'Semua';
+  // Alamat kanal yang tidak cocok dengan kategori mana pun = halaman tidak ada.
+  // Selama daftar kanal belum tiba dari Firestore, jangan buru-buru menyebut
+  // alamatnya tidak ada — kanal yang sah bisa berkedip jadi 404 dulu.
+  const kanalTidakDikenal =
+    Boolean(kanalSlug) && !matchedKanal && activeCategoryNames.length > 0;
+
+  const selectCategory = (cat: CategoryType | 'Semua') =>
+    navigate(cat === 'Semua' ? '/' : `/kanal/${slugifyCategory(cat)}`);
 
   const selectArticle = (article: Article) => navigate(articlePath(article));
   const goHome = () => navigate('/');
@@ -324,6 +366,77 @@ export default function App({ newsroom = false }: { newsroom?: boolean }) {
   const heroArticle = feedArticles.find(a => a.isHero) || feedArticles[0];
   const logoUrl = resolveLogoUrl(siteSettings);
 
+  /*
+   * Meta beranda, halaman tag, dan Ruang Redaksi.
+   *
+   * Halaman artikel dan halaman statis mengatur metanya sendiri lewat
+   * komponen masing-masing, jadi di sini sengaja dilewati — kalau tidak,
+   * dua hook akan berebut menulis judul yang sama.
+   *
+   * /redaksi ditandai noindex. robots.txt sudah melarangnya, tapi larangan
+   * di robots.txt hanya menghentikan PERAYAPAN, bukan PENGINDEKSAN: alamat
+   * yang ditaut dari luar tetap bisa muncul di hasil pencarian tanpa
+   * cuplikan. Tag noindex-lah yang benar-benar mengeluarkannya.
+   */
+  const halamanArtikel = Boolean(selectedArticle);
+  const halamanStatis = Boolean(validPageSlug);
+  // Alamat tak dikenal, termasuk /kanal/<slug> yang tidak cocok kanal mana pun.
+  const halamanTidakAda = notFound || kanalTidakDikenal;
+
+  useSeo(
+    halamanTidakAda
+      ? { title: 'Halaman tidak ditemukan', noindex: true }
+      : newsroom
+      ? { title: 'Ruang Redaksi', path: '/redaksi', noindex: true }
+      : matchedKanal
+      ? {
+          title: `Berita ${matchedKanal}`,
+          description:
+            `Kumpulan berita ${matchedKanal} terbaru di PABEN.ID — faktual, ` +
+            'terpercaya, dan terkini.',
+          path: `/kanal/${slugifyCategory(matchedKanal)}`,
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: `Berita ${matchedKanal}`,
+            isPartOf: { '@type': 'WebSite', name: 'PABEN.ID' },
+            inLanguage: 'id-ID',
+          },
+        }
+      : activeTag
+      ? {
+          title: `Tag: #${activeTag}`,
+          description: `Kumpulan berita PABEN.ID bertag #${activeTag}.`,
+          path: `/tag/${encodeURIComponent(activeTag)}`,
+          // Halaman tag mudah menjamur dan isinya tumpang tindih dengan
+          // kanal. Dibiarkan terindeks, tapi tidak diikutkan sebagai
+          // halaman utama untuk kata kunci apa pun.
+        }
+      : halamanArtikel || halamanStatis
+      ? {}
+      : {
+          title: 'Wibawa dalam setiap Berita',
+          path: '/',
+          jsonLd: [
+            {
+              '@context': 'https://schema.org',
+              '@type': 'NewsMediaOrganization',
+              name: 'PABEN.ID',
+              url: typeof window !== 'undefined' ? window.location.origin : '',
+              logo: typeof window !== 'undefined' ? `${window.location.origin}/logo-icon-512.png` : '',
+              slogan: 'Wibawa dalam setiap Berita',
+            },
+            {
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'PABEN.ID',
+              url: typeof window !== 'undefined' ? window.location.origin : '',
+              inLanguage: 'id-ID',
+            },
+          ],
+        }
+  );
+
   const openArticleEditor = (article: Article | null) => {
     setEditingArticle(article);
     setArticleEditorOpen(true);
@@ -337,10 +450,7 @@ export default function App({ newsroom = false }: { newsroom?: boolean }) {
       {/* Top Header Navigation */}
       <Header
         selectedCategory={selectedCategory}
-        onSelectCategory={(cat) => {
-          setSelectedCategory(cat);
-          goHome();
-        }}
+        onSelectCategory={selectCategory}
         onOpenSearch={() => setSearchOverlayOpen(true)}
         onOpenAuth={() => setAuthModalOpen(true)}
         onOpenArticleEditor={() => {
@@ -382,7 +492,31 @@ export default function App({ newsroom = false }: { newsroom?: boolean }) {
 
       {/* Main Body Content */}
       <div className="flex-grow w-full max-w-7xl mx-auto px-4 md:px-6 relative mt-6">
-        {newsroom ? (
+        {halamanTidakAda ? (
+          /*
+           * Halaman tidak ditemukan.
+           *
+           * Statusnya tetap 200 karena `vercel.json` menyajikan index.html
+           * untuk semua alamat — yang mengeluarkannya dari indeks adalah tag
+           * noindex di atas, bukan kode status.
+           */
+          <div className="flex flex-col items-center justify-center py-24 px-4 text-center gap-4">
+            <span className="font-display text-6xl font-extrabold text-[#e15b00]">404</span>
+            <h1 className="font-display text-2xl md:text-3xl font-extrabold text-[#170c0a]">
+              Halaman tidak ditemukan
+            </h1>
+            <p className="text-sm text-stone-500 max-w-md">
+              Alamat yang kamu buka tidak ada, sudah dipindahkan, atau beritanya
+              sudah tidak tayang.
+            </p>
+            <button
+              onClick={() => goHome()}
+              className="mt-2 bg-[#e15b00] hover:bg-[#a63c00] text-white px-5 py-2 rounded-full text-sm font-bold transition-colors cursor-pointer"
+            >
+              Kembali ke Beranda
+            </button>
+          </div>
+        ) : newsroom ? (
           /* Ruang Redaksi PABEN — hanya untuk kru yang sudah login */
           newsroomUser ? (
             <Newsroom
@@ -485,6 +619,8 @@ export default function App({ newsroom = false }: { newsroom?: boolean }) {
                     >
                       <div className="h-40 w-full mb-3 overflow-hidden rounded-lg bg-stone-200">
                         <img
+                          loading="lazy"
+                          decoding="async"
                           src={art.imageUrl}
                           alt={art.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -542,13 +678,30 @@ export default function App({ newsroom = false }: { newsroom?: boolean }) {
                 </div>
               )}
 
+              {/*
+                Judul halaman kanal.
+                CategoryGrid hanya memasang <h2> per kategori, jadi tanpa ini
+                halaman kanal tidak punya <h1> sama sekali — dan <h1> itulah
+                yang dibaca mesin pencari sebagai topik utama halaman.
+              */}
+              {matchedKanal && (
+                <div className="mb-6">
+                  <h1 className="text-2xl md:text-3xl font-extrabold text-[#170c0a] font-display">
+                    Berita <span className="text-[#e15b00]">{matchedKanal}</span>
+                  </h1>
+                  <p className="text-sm text-stone-500 mt-1">
+                    Kabar {matchedKanal.toLowerCase()} terbaru di PABEN.ID.
+                  </p>
+                </div>
+              )}
+
               {/* Categorized News Grid */}
               <CategoryGrid
                 articles={feedArticles}
                 categories={activeCategoryNames}
                 selectedCategory={selectedCategory}
                 onSelectArticle={selectArticle}
-                onSelectCategory={(cat) => setSelectedCategory(cat)}
+                onSelectCategory={selectCategory}
               />
 
               {/* Berita lama diambil hanya kalau pembaca memintanya */}
@@ -591,10 +744,7 @@ export default function App({ newsroom = false }: { newsroom?: boolean }) {
       {/* Footer */}
       <Footer
         categories={activeCategoryNames}
-        onSelectCategory={(cat) => {
-          setSelectedCategory(cat);
-          goHome();
-        }}
+        onSelectCategory={selectCategory}
         onGoHome={() => goHome()}
       />
 

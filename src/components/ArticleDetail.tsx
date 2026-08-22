@@ -5,7 +5,8 @@ import { db } from '../lib/firebase';
 import { Article, UserProfile } from '../types';
 import { PabenMark } from './PabenMark';
 import { ShareButtons } from './ShareButtons';
-import { readingMinutes } from '../lib/slug';
+import { readingMinutes, articlePath } from '../lib/slug';
+import { useSeo } from '../lib/seo';
 import { isAdmin } from '../lib/admin';
 import { Comments } from './Comments';
 import { AdBanner } from './AdBanner';
@@ -142,41 +143,43 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({
    * Ini yang dibaca Google untuk menampilkan berita sebagai kartu di hasil
    * pencarian dan sebagai syarat masuk Google News. Disuntikkan lewat efek,
    * bukan ditulis di index.html, karena isinya berbeda tiap artikel.
+   *
+   * `dateModified` mengikuti updatedAt kalau ada. Untuk berita, Google
+   * memakai selisih dua tanggal ini sebagai sinyal kesegaran — kalau
+   * keduanya selalu sama, artikel yang diralat tidak pernah terlihat
+   * diperbarui.
    */
-  useEffect(() => {
-    const data = {
-      '@context': 'https://schema.org',
-      '@type': 'NewsArticle',
-      headline: article.title.slice(0, 110),   // Google memotong di 110 karakter
-      description: article.excerpt,
-      image: article.imageUrl ? [article.imageUrl] : undefined,
-      datePublished: article.createdAt,
-      dateModified: article.createdAt,
-      author: { '@type': 'Person', name: article.author },
-      publisher: {
-        '@type': 'Organization',
-        name: 'PABEN.ID',
-        logo: { '@type': 'ImageObject', url: `${window.location.origin}/logo-icon-512.png` },
-      },
-      mainEntityOfPage: { '@type': 'WebPage', '@id': window.location.href },
-      articleSection: article.category,
-      keywords: (article.tags || []).join(', '),
-    };
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: article.title.slice(0, 110),   // Google memotong di 110 karakter
+    description: article.excerpt,
+    image: article.imageUrl ? [article.imageUrl] : undefined,
+    datePublished: article.createdAt,
+    dateModified: (article as { updatedAt?: string }).updatedAt || article.createdAt,
+    author: { '@type': 'Person', name: article.author },
+    publisher: {
+      '@type': 'NewsMediaOrganization',
+      name: 'PABEN.ID',
+      logo: { '@type': 'ImageObject', url: `${window.location.origin}/logo-icon-512.png` },
+    },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': window.location.href },
+    articleSection: article.category,
+    keywords: (article.tags || []).join(', '),
+    inLanguage: 'id-ID',
+  };
 
-    const el = document.createElement('script');
-    el.type = 'application/ld+json';
-    el.text = JSON.stringify(data);
-    document.head.appendChild(el);
-
-    // Judul tab ikut judul berita, penting untuk riwayat & bookmark browser.
-    const judulSebelumnya = document.title;
-    document.title = `${article.title} - PABEN.ID`;
-
-    return () => {
-      el.remove();
-      document.title = judulSebelumnya;
-    };
-  }, [article]);
+  useSeo({
+    title: article.title,
+    description: article.excerpt,
+    path: articlePath(article),
+    image: article.imageUrl || undefined,
+    type: 'article',
+    // Berita yang dinonaktifkan redaksi masih bisa dibuka lewat tautan
+    // langsung, tapi tidak boleh ikut terindeks.
+    noindex: !isArticleActive,
+    jsonLd,
+  });
 
   const relatedArticles = allArticles
     .filter(a => a.id !== article.id && a.category === article.category)
@@ -266,6 +269,9 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({
       <figure className="w-full">
         <div className="relative rounded-xl overflow-hidden shadow-md bg-stone-900">
           <img 
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             src={article.imageUrl} 
             alt={article.title}
             className="w-full h-auto max-h-[480px] object-cover" 
@@ -363,6 +369,8 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({
                 className="group cursor-pointer border border-stone-100 p-2.5 rounded-lg hover:shadow-md transition-all bg-stone-50/50"
               >
                 <img 
+                  loading="lazy"
+                  decoding="async"
                   src={rel.imageUrl} 
                   alt={rel.title}
                   className="w-full h-28 object-cover rounded-md mb-2 bg-stone-200 group-hover:scale-105 transition-transform" 

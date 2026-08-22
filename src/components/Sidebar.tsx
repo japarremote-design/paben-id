@@ -37,6 +37,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ articles, onSelectArticle }) =
             >
               <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-stone-100">
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={article.imageUrl}
                   alt={article.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"

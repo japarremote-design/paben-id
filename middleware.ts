@@ -23,10 +23,24 @@ const SITE_NAME = 'PABEN.ID';
 const SITE_URL = process.env.SITE_URL || 'https://paben.id';
 const DEFAULT_IMAGE = `${SITE_URL}/og-default.jpg`;
 
-// Known social/link-preview crawlers. Extend this list if a platform's
-// preview stops working.
+/*
+ * Perayap PRATINJAU TAUTAN saja — bukan perayap mesin pencari.
+ *
+ * Perbedaan ini penting. Bot di daftar ini menerima HTML ringkas berisi tag
+ * Open Graph plus <meta http-equiv="refresh">, yang berbeda dari halaman yang
+ * dilihat pembaca. Untuk pratinjau WhatsApp dan sejenisnya itu praktik lazim
+ * dan memang satu-satunya cara agar pratinjaunya benar.
+ *
+ * Untuk mesin pencari, menyajikan halaman berbeda adalah cloaking. Karena itu
+ * Google-InspectionTool sengaja DIKELUARKAN dari daftar: alat inspeksi Google
+ * harus melihat halaman yang sama persis dengan pembaca. Googlebot sendiri
+ * menjalankan JavaScript, jadi ia membaca meta dan structured data yang
+ * dipasang aplikasi lewat src/lib/seo.ts — tidak perlu jalur khusus.
+ *
+ * JANGAN tambahkan Googlebot, Bingbot, atau perayap mesin pencari lain ke sini.
+ */
 const BOT_UA_REGEX =
-  /facebookexternalhit|Facebot|WhatsApp|TelegramBot|Twitterbot|LinkedInBot|Slackbot|Discordbot|SkypeUriPreview|Pinterest|redditbot|vkShare|Google-InspectionTool|Applebot/i;
+  /facebookexternalhit|Facebot|WhatsApp|TelegramBot|Twitterbot|LinkedInBot|Slackbot|Discordbot|SkypeUriPreview|Pinterest|redditbot|vkShare|Applebot/i;
 
 function escapeHtml(input: string): string {
   return input
@@ -136,7 +150,7 @@ export const config = {
    * Selama domain itu belum aktif, WhatsApp mengambil gambar dari alamat yang
    * tidak bisa dijangkau, dan hasilnya preview tanpa gambar sama sekali.
    */
-  matcher: ['/', '/berita/:path*', '/artikel/:path*', '/halaman/:path*', '/tag/:path*'],
+  matcher: ['/', '/berita/:path*', '/artikel/:path*', '/halaman/:path*', '/tag/:path*', '/kanal/:path*'],
 };
 
 export default async function middleware(request: Request) {
@@ -166,11 +180,11 @@ export default async function middleware(request: Request) {
     const html = renderHtml({
       // renderHtml sudah menambahkan " - PABEN.ID" di belakang judul, jadi
       // di sini cukup bagian taglinenya saja supaya tidak tertulis dua kali.
-      title: 'Berita Faktual, Terpercaya, Terkini',
+      title: 'Wibawa dalam setiap Berita',
       type: 'website',
       description:
-        'PABEN.ID menyajikan berita faktual, terupdate, tajam, dan mendalam ' +
-        'seputar politik, daerah, ekonomi, dan pendidikan.',
+        'PABEN.ID menyajikan berita faktual, terpercaya, dan terkini seputar ' +
+        'nasional, ekonomi, olahraga, teknologi, hiburan, daerah, dan opini.',
       image: `${origin}/og-default.jpg`,
       imageWidth: 1200,
       imageHeight: 630,

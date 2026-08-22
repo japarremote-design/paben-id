@@ -70,7 +70,7 @@ export function canRestoreArticle(u: NewsroomUser | null): boolean {
 function ownsArticle(u: NewsroomUser | null, article: Article): boolean {
   if (!u) return false;
   if (article.authorUid) return article.authorUid === u.uid;
-  // Artikel lama dari sistem PABEN.ID lama hanya menyimpan nama penulis.
+  // Artikel lama dari sistem PASEK.ID lama (basis codebase ini) hanya menyimpan nama penulis.
   return (article.author || '').trim().toLowerCase() === u.namaLengkap.trim().toLowerCase();
 }
 

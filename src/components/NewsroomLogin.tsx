@@ -7,7 +7,7 @@ interface NewsroomLoginProps {
 }
 
 /**
- * "Login Sistem Redaksi" — tampilannya mengikuti PABEN.ID lama, tapi
+ * "Login Sistem Redaksi" — tampilannya mengikuti PASEK.ID, basis codebase ini, tapi
  * verifikasi password dilakukan Firebase Auth, bukan dicocokkan di browser.
  */
 export const NewsroomLogin: React.FC<NewsroomLoginProps> = ({ onSignedIn }) => {

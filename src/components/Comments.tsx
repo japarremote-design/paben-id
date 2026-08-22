@@ -15,7 +15,7 @@ export const Comments: React.FC<CommentsProps> = ({ articleId, user, onOpenAuth 
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Identitas untuk komentar tamu (tanpa login), seperti PABEN.ID lama.
+  // Identitas untuk komentar tamu (tanpa login), seperti di PASEK.ID, basis codebase ini.
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestSite, setGuestSite] = useState('');

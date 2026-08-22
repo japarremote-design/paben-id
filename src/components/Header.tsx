@@ -53,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'PABEN.ID - Berita Faktual, Terpercaya, Terkini',
+          title: 'PABEN.ID - Wibawa dalam setiap Berita',
           url: window.location.href,
         });
       } catch (err) {
@@ -79,8 +79,11 @@ export const Header: React.FC<HeaderProps> = ({
           }}
         >
           <img
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             src={logoUrl}
-            alt="PABEN.ID - Berita Faktual, Terpercaya, Terkini"
+            alt="PABEN.ID - Wibawa dalam setiap Berita"
             className="h-11 sm:h-12 md:h-14 w-auto object-contain hover:scale-105 transition-transform"
           />
         </div>

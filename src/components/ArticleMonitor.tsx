@@ -20,7 +20,7 @@ interface ArticleMonitorProps {
 /**
  * "Monitor Status Artikel" — daftar semua berita beserta tahapannya, dengan
  * tombol aksi yang muncul sesuai role. Penghapusan bersifat lunak
- * (isActive=false), sama seperti flag is_deleted di sistem PABEN.ID lama,
+ * (isActive=false), sama seperti flag is_deleted di sistem PASEK.ID lama (basis codebase ini),
  * jadi Super Admin masih bisa memulihkannya.
  */
 export const ArticleMonitor: React.FC<ArticleMonitorProps> = ({ articles, currentUser, onEdit }) => {

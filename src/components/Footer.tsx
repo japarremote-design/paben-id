@@ -33,7 +33,7 @@ export const Footer: React.FC<FooterProps> = ({ categories, onSelectCategory, on
             PABEN<span className="text-[#fa9d68]">.ID</span>
           </span>
           <p className="font-tagline text-stone-400 text-sm -mt-1">
-            wibawa dalam setiap berita
+            Wibawa dalam setiap Berita
           </p>
           <p className="text-stone-400 leading-relaxed">
             PABEN.ID menyajikan berita faktual, terpercaya, dan terkini seputar

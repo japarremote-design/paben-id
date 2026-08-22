@@ -65,6 +65,8 @@ export const AdBanner: React.FC<AdBannerProps> = ({ type, className = '', layout
           title={ad.label}
         >
           <img
+            loading="lazy"
+            decoding="async"
             src={ad.imageUrl}
             alt={ad.label}
             className="w-full object-cover rounded"

@@ -35,7 +35,13 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
 
         return (
           <section key={category} className="bg-white p-5 rounded-xl border border-stone-200/80 shadow-sm">
-            {/* Category Section Header */}
+            {/*
+              Kepala seksi kategori.
+              Di halaman kanal, App.tsx sudah memasang <h1> berisi nama kanal
+              yang sama — jadi kepala seksi ini dilewati supaya namanya tidak
+              tertulis dua kali beruntun.
+            */}
+            {selectedCategory === 'Semua' && (
             <div className="flex items-center justify-between border-b-2 border-[#170c0a] pb-2.5 mb-5">
               <h2 className="text-xl md:text-2xl font-bold text-[#170c0a] font-display flex items-center gap-2">
                 <span className="w-2.5 h-6 bg-[#e15b00] rounded-full inline-block"></span>
@@ -51,6 +57,7 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
                 </button>
               )}
             </div>
+            )}
 
             {/* Category Articles Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -68,6 +75,8 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
                       >
                         <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[#170c0a]/10">
                           <img
+                            loading="lazy"
+                            decoding="async"
                             src={article.imageUrl}
                             alt={article.title}
                             className="w-full h-full object-cover"
@@ -103,6 +112,8 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
                       >
                         <div className="relative h-44 w-full mb-3 overflow-hidden rounded-md bg-stone-200">
                           <img 
+                            loading="lazy"
+                            decoding="async"
                             src={article.imageUrl} 
                             alt={article.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
@@ -137,6 +148,8 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
                       className="flex gap-3.5 group cursor-pointer p-2 rounded-lg hover:bg-stone-50 transition-colors"
                     >
                       <img 
+                        loading="lazy"
+                        decoding="async"
                         src={article.imageUrl} 
                         alt={article.title}
                         className="w-24 h-24 object-cover rounded-lg flex-shrink-0 bg-stone-200 shadow-sm group-hover:scale-105 transition-transform" 

@@ -11,7 +11,34 @@ const PROJECT_ID =
   process.env.VITE_FIREBASE_PROJECT_ID || 'GANTI-DENGAN-PROJECT-ID-PABEN';
 const DATABASE_ID = '(default)';
 
-export const SITE_URL = (process.env.SITE_URL || 'https://paben.id').replace(/\/$/, '');
+/**
+ * Alamat dasar situs.
+ *
+ * Diambil berjenjang: env SITE_URL kalau diisi, kalau tidak dari header
+ * permintaan yang masuk, baru terakhir konstanta.
+ *
+ * Urutan ini penting. Sebelumnya nilainya dipatok ke https://paben.id, jadi
+ * selama domain itu belum aktif sitemap.xml berisi ribuan alamat yang tidak
+ * bisa dibuka — dan sitemap penuh alamat mati adalah salah satu cara tercepat
+ * kehilangan kepercayaan perayap.
+ */
+const SITE_URL_FALLBACK = 'https://paben.id';
+
+export function siteUrlFrom(req) {
+  const dariEnv = process.env.SITE_URL;
+  if (dariEnv) return dariEnv.replace(/\/$/, '');
+
+  const host = req?.headers?.['x-forwarded-host'] || req?.headers?.host;
+  if (host) {
+    const proto = req?.headers?.['x-forwarded-proto'] || 'https';
+    return `${proto}://${host}`.replace(/\/$/, '');
+  }
+
+  return SITE_URL_FALLBACK;
+}
+
+/** Dipertahankan untuk pemanggil lama; lebih baik pakai siteUrlFrom(req). */
+export const SITE_URL = (process.env.SITE_URL || SITE_URL_FALLBACK).replace(/\/$/, '');
 export const SITE_NAME = 'PABEN.ID';
 export const SITE_DESC =
   'PABEN.ID menyajikan berita faktual, terpercaya, dan terkini seputar nasional, ekonomi, olahraga, teknologi, hiburan, daerah, dan opini.';
@@ -33,10 +60,10 @@ export function slugifyTitle(title) {
     .replace(/-$/, '');
 }
 
-export function articleUrl(article) {
+export function articleUrl(article, base = SITE_URL) {
   const slug = slugifyTitle(article.title);
   // Tanda hubung GANDA sebagai pemisah — harus sama dengan src/lib/slug.ts.
-  return slug ? `${SITE_URL}/berita/${slug}--${article.id}` : `${SITE_URL}/berita/${article.id}`;
+  return slug ? `${base}/berita/${slug}--${article.id}` : `${base}/berita/${article.id}`;
 }
 
 export function escapeXml(text) {

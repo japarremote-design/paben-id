@@ -1,4 +1,4 @@
-# PABEN.ID — Berita Faktual, Terpercaya, Terkini
+# PABEN.ID — Wibawa dalam setiap Berita
 
 Portal berita PABEN.ID. Basis kode diambil dari arsitektur HaloJatimNews
 (Vite + React 19 + TypeScript + Tailwind 4 + Firebase Firestore/Auth),
@@ -36,21 +36,72 @@ dan seterusnya.
 | Barlow | 400/600 | navigasi & antarmuka |
 | Newsreader | italic 400 | tagline & kutipan |
 
-Tagline: *wibawa dalam setiap berita*
+Tagline: *Wibawa dalam setiap Berita*
 
 Aset logo ada di `public/`, semuanya digambar ulang dari spesifikasi Glass
 Bold (kotak jingga radius 15/64, huruf P Barlow Condensed 800 putih digeser
 2/64 ke bawah untuk keseimbangan optis, sorot tipis di tepi atas):
 
-- `logo-wordmark.png` — lockup header: monogram + PABEN.ID. **Tanpa tagline**,
-  karena di tinggi header 56px teks tagline turun ke ~8px dan tidak terbaca
-- `logo-wordmark-tagline.png` — lockup penuh bertagline, untuk kop surat & share card
+- `logo-wordmark.png` — lockup utama: monogram + PABEN.ID + tagline. Proporsinya
+  persis mengikuti dokumen (monogram 64u, wordmark 22u, tagline 11.5u, jarak 14u)
+  supaya tagline tetap terbaca di tinggi header
+- `logo-wordmark-plain.png` — lockup tanpa tagline, untuk tempat sangat sempit
 - `logo-icon-512.png` — ikon aplikasi
 - `favicon.ico`, `favicon-32.png`, `apple-touch-icon.png`
 - `og-default.jpg` — gambar OG default 1200×630
 
 `src/components/PabenMark.tsx` adalah versi SVG monogram yang sama, dipakai
 inline di byline artikel supaya tetap tajam di ukuran kecil.
+
+## SEO
+
+Yang sudah terpasang:
+
+| Hal | Di mana |
+|---|---|
+| Judul, deskripsi, canonical, OG per halaman | `src/lib/seo.ts` (hook `useSeo`) |
+| `NewsArticle` JSON-LD per berita | `src/components/ArticleDetail.tsx` |
+| `NewsMediaOrganization` + `WebSite` JSON-LD | beranda, di `src/App.tsx` |
+| `noindex` untuk `/redaksi` & berita nonaktif | via `useSeo({ noindex: true })` |
+| Halaman kanal `/kanal/<slug>` + `CollectionPage` | `src/App.tsx`, `src/main.tsx` |
+| Halaman 404 ber-noindex | `src/App.tsx` (prop `notFound`) |
+| sitemap.xml + kanal + tag Google News | `api/sitemap.js` |
+| rss.xml | `api/rss.js` |
+| robots.txt dinamis | `api/robots.js` |
+| Preview WhatsApp/Telegram/X | `middleware.ts` (edge) |
+| Lazy-load gambar, `fetchPriority` di elemen LCP | komponen masing-masing |
+| Bundle dipecah react/firebase/icons | `vite.config.ts` |
+
+**Canonical itu wajib di sini.** `vercel.json` mengarahkan semua alamat ke
+`index.html` dengan status 200, jadi `/berita/apa-pun-ngawur` tetap membalas
+halaman penuh. Tanpa canonical, satu berita bisa terindeks di alamat tak
+terhingga banyaknya.
+
+**Halaman kanal.** `/kanal/<slug>` — kanal aktif diturunkan dari alamat, bukan
+dari state, jadi tiap kanal punya judul, canonical, `CollectionPage` JSON-LD,
+dan tempat sendiri di sitemap. Slug dibuat `slugifyCategory()`.
+
+> Daftar kanal di `api/sitemap.js` ditulis manual (konstanta `KANAL`) supaya
+> sitemap tetap terbit walau Firestore bermasalah. **Kalau menambah kanal lewat
+> panel admin, tambahkan juga di sana** — kalau tidak, kanal barunya tidak
+> pernah masuk sitemap.
+
+**Halaman 404.** Alamat tak dikenal, termasuk `/kanal/<slug>` yang tidak cocok
+kanal mana pun, menampilkan halaman 404 ber-`noindex`. Status HTTP-nya tetap
+200 karena `vercel.json` menyajikan `index.html` untuk semua alamat — yang
+mengeluarkannya dari indeks adalah tag `noindex`, bukan kode status.
+
+**`BOT_UA_REGEX` hanya untuk perayap pratinjau tautan.** Bot di daftar itu
+menerima HTML berbeda dari yang dilihat pembaca; untuk mesin pencari itu
+cloaking. `Google-InspectionTool` sudah dikeluarkan. Jangan tambahkan Googlebot
+atau Bingbot ke sana — Googlebot menjalankan JavaScript dan sudah membaca meta
+dari `src/lib/seo.ts`.
+
+**Yang masih tersisa:**
+
+- Halaman kanal belum berpaginasi. Begitu satu kanal punya ratusan berita,
+  semuanya menumpuk di satu alamat.
+- Belum ada `BreadcrumbList` JSON-LD.
 
 ## Menjalankan Secara Lokal
 
@@ -103,17 +154,22 @@ Set di Vercel → Settings → Environment Variables. Nilai env var akan
    lalu Publish.
 
 Saat pertama kali dibuka dan koleksi masih kosong, aplikasi otomatis
-melakukan seeding: 8 artikel contoh (`src/lib/seedData.ts`) dan 10 kategori
+melakukan seeding: 8 artikel contoh (`src/lib/seedData.ts`) dan 7 kanal
 default (`src/lib/categories.ts`). Hapus/ubah isinya lewat panel admin.
 Seeding hanya berhasil kalau yang membuka sudah login sebagai Super Admin,
 karena aturan Firestore menolak tulisan dari pengunjung biasa.
 
-### Migrasi data dari PABEN.ID lama
+### Migrasi data dari situs lama (opsional)
 
-Situs PABEN.ID lama memakai **Realtime Database** (project `paben-com`),
-sedangkan yang ini memakai **Firestore** — dua produk berbeda, jadi datanya
-tidak berpindah sendiri. Skrip `scripts/migrate-rtdb-to-firestore.mjs`
-memindahkannya.
+> **Bagian ini warisan dari codebase PASEK.ID dan belum tentu berlaku untuk
+> PABEN.ID.** Nama project `paben-com` di bawah adalah hasil rename otomatis
+> dari `pasek-com` — project itu tidak ada. Kalau PABEN.ID situs baru tanpa
+> data lama, lewati saja seluruh bagian ini; skripnya tetap disertakan kalau
+> nanti ada data Realtime Database yang perlu dipindahkan.
+
+Skrip `scripts/migrate-rtdb-to-firestore.mjs` memindahkan data dari
+**Realtime Database** ke **Firestore** — dua produk Firebase yang berbeda,
+jadi datanya tidak berpindah sendiri.
 
 ```bash
 # 1. Ekspor data lama
@@ -160,7 +216,7 @@ demi menjaga draft tetap tertutup. Artikel hasil impor yang tidak punya
 
 ## Ruang Redaksi PABEN (`/redaksi`)
 
-Sistem redaksi berjenjang, dibawa dari PABEN.ID lama.
+Sistem redaksi berjenjang, dibawa dari PASEK.ID, basis codebase ini.
 
 ### Jenjang & izin
 
@@ -194,7 +250,7 @@ Dua jalur, sesuai perannya:
 - **Kru redaksi** → buka `/redaksi`, isi username + password.
 
 Password ditangani Firebase Auth (di-hash di server Google) — situs tidak
-pernah menyimpan atau membacanya. Ini berbeda dari sistem PABEN.ID lama yang
+pernah menyimpan atau membacanya. Ini berbeda dari sistem PASEK.ID lama (basis codebase ini) yang
 menyimpan password apa adanya di database dan mencocokkannya di browser.
 
 Aktifkan **Email/Password** di Firebase Console → Authentication → Sign-in

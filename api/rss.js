@@ -1,5 +1,5 @@
 import {
-  SITE_URL,
+  siteUrlFrom,
   SITE_NAME,
   SITE_DESC,
   articleUrl,
@@ -14,14 +14,15 @@ import {
  * Hanya 30 berita terbaru. Umpan RSS memang untuk "apa yang baru", bukan arsip
  * — arsip lengkapnya urusan sitemap.
  */
-export default async function handler(_req, res) {
+export default async function handler(req, res) {
   try {
+    const SITE_URL = siteUrlFrom(req);
     const articles = (await fetchPublishedArticles(30)).slice(0, 30);
 
     const items = articles.map(a => `    <item>
       <title>${escapeXml(a.title)}</title>
-      <link>${escapeXml(articleUrl(a))}</link>
-      <guid isPermaLink="true">${escapeXml(articleUrl(a))}</guid>
+      <link>${escapeXml(articleUrl(a, SITE_URL))}</link>
+      <guid isPermaLink="true">${escapeXml(articleUrl(a, SITE_URL))}</guid>
       <description>${escapeXml(a.excerpt)}</description>
       <category>${escapeXml(a.category)}</category>
       <dc:creator>${escapeXml(a.author)}</dc:creator>

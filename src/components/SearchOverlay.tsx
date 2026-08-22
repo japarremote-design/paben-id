@@ -90,6 +90,8 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                 className="flex gap-3.5 p-3 rounded-xl hover:bg-amber-50/60 border border-stone-100 transition-all cursor-pointer group"
               >
                 <img 
+                  loading="lazy"
+                  decoding="async"
                   src={art.imageUrl} 
                   alt={art.title} 
                   className="w-20 h-20 rounded-lg object-cover flex-shrink-0 bg-stone-200" 

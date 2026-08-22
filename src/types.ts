@@ -48,7 +48,7 @@ export interface Article {
   authorAvatar?: string;
   /** UID penulis. Dipakai untuk cek "artikel milik sendiri" pada Reporter. */
   authorUid?: string;
-  /** Kota/dateline berita, mis. "SURABAYA". Dibawa dari sistem PABEN.ID lama. */
+  /** Kota/dateline berita, mis. "SURABAYA". Dibawa dari sistem PASEK.ID lama (basis codebase ini). */
   city?: string;
   createdAt: string; // ISO string
   views: number;

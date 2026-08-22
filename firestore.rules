@@ -22,7 +22,7 @@ service cloud.firestore {
     function isBootstrapAdmin() {
       return signedIn() && request.auth.token.email in [
         'japar.remote@gmail.com',
-        'pabenid@gmail.com'
+        'storyvideoislami234@gmail.com'
       ];
     }
 

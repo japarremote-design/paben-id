@@ -4,6 +4,7 @@ import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { PageContent, UserProfile } from '../types';
 import { isAdmin } from '../lib/admin';
+import { useSeo } from '../lib/seo';
 import {
   StaticPageSlug,
   STATIC_PAGE_LABELS,
@@ -26,6 +27,17 @@ export const StaticPageView: React.FC<StaticPageViewProps> = ({ slug, user, onBa
 
   const label = STATIC_PAGE_LABELS[slug];
   const userIsAdmin = isAdmin(user?.email);
+
+  /*
+   * Halaman legal & profil redaksi ikut dinilai Google sebagai sinyal
+   * E-E-A-T untuk situs berita — jadi masing-masing perlu judul, deskripsi,
+   * dan canonical sendiri, bukan warisan dari beranda.
+   */
+  useSeo({
+    title: page?.title || label,
+    description: (page?.content || '').replace(/\s+/g, ' ').trim().slice(0, 160) || undefined,
+    path: `/halaman/${slug}`,
+  });
 
   useEffect(() => {
     setLoading(true);

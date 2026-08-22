@@ -8,7 +8,7 @@ interface BreakingTickerProps {
 }
 
 /**
- * Running text breaking news, dibawa dari PABEN.ID lama.
+ * Running text breaking news, dibawa dari PASEK.ID, basis codebase ini.
  *
  * Daftar judul digandakan dua kali lalu digeser sejauh -50%, supaya saat
  * animasi mengulang, salinan kedua sudah berada tepat di posisi awal salinan

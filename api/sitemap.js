@@ -1,8 +1,9 @@
 import {
-  SITE_URL,
+  siteUrlFrom,
   articleUrl,
   escapeXml,
   fetchPublishedArticles,
+  slugifyTitle,
 } from './_firestore.js';
 
 /**
@@ -18,14 +19,26 @@ import {
  * situs biasa.
  */
 
+/*
+ * Kanal ikut disertakan. Daftarnya disalin dari src/lib/categories.ts —
+ * fungsi ini tidak membaca koleksi "categories" supaya sitemap tetap terbit
+ * walau Firestore sedang bermasalah. Kalau kanal di panel ditambah, tambahkan
+ * juga di sini.
+ */
+const KANAL = [
+  'Nasional', 'Ekonomi', 'Olahraga', 'Teknologi', 'Hiburan', 'Daerah', 'Opini',
+];
+
 const HALAMAN_STATIS = [
   '', 'halaman/tentang', 'halaman/redaksi', 'halaman/kontak', 'halaman/iklan',
   'halaman/pedoman-media-siber', 'halaman/kebijakan-privasi',
   'halaman/syarat-ketentuan', 'halaman/kontak-pengaduan',
 ];
 
-export default async function handler(_req, res) {
+export default async function handler(req, res) {
   try {
+    // Alamat dasar mengikuti domain yang sedang melayani permintaan ini.
+    const SITE_URL = siteUrlFrom(req);
     const articles = await fetchPublishedArticles(1000);
     const sekarang = new Date().toISOString();
 
@@ -42,10 +55,19 @@ export default async function handler(_req, res) {
   </url>`
     ).join('\n');
 
+    const urlKanal = KANAL.map(
+      nama => `  <url>
+    <loc>${SITE_URL}/kanal/${slugifyTitle(nama)}</loc>
+    <lastmod>${sekarang}</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>`
+    ).join('\n');
+
     const urlBerita = articles.map(a => {
       const baru = new Date(a.createdAt).getTime() >= batasNews;
       return `  <url>
-    <loc>${escapeXml(articleUrl(a))}</loc>
+    <loc>${escapeXml(articleUrl(a, SITE_URL))}</loc>
     <lastmod>${escapeXml(a.createdAt)}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>${baru ? `
@@ -64,6 +86,7 @@ export default async function handler(_req, res) {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
 ${urlStatis}
+${urlKanal}
 ${urlBerita}
 </urlset>`;
 
