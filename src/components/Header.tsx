@@ -228,11 +228,19 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
           ) : (
+            /*
+             * Tombol masuk — Jingga Redaksi, sama seperti tombol LANGGANAN di
+             * dokumen identitas (background oklch(.635 .185 44), teks putih,
+             * hover oklch(.50 .155 42)).
+             *
+             * Ikonnya dibuat putih, bukan Jingga Terang seperti sebelumnya —
+             * Jingga Terang di atas Jingga Redaksi hampir tidak terlihat.
+             */
             <button
               onClick={onOpenAuth}
-              className="bg-[#170c0a] hover:bg-[#2f201d] text-white px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+              className="bg-[#e15b00] hover:bg-[#a63c00] text-white px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
-              <UserIcon className="w-4 h-4 text-[#fa9d68]" />
+              <UserIcon className="w-4 h-4 text-white" />
               <span>Masuk Google</span>
             </button>
           )}
