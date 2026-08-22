@@ -21,7 +21,7 @@ const FIRESTORE_PROJECT_ID =
 const FIRESTORE_DATABASE_ID = '(default)';
 const SITE_NAME = 'PABEN.ID';
 const SITE_URL = process.env.SITE_URL || 'https://paben.id';
-const DEFAULT_IMAGE = `${SITE_URL}/og-default.jpg`;
+const DEFAULT_IMAGE = `${SITE_URL}/og-default.jpg?v=2`;
 
 /*
  * Perayap PRATINJAU TAUTAN saja — bukan perayap mesin pencari.
@@ -66,6 +66,18 @@ function stripFirestoreValue(field: any): string | undefined {
 function toWhatsAppFriendlyImage(url: string): { url: string; width: number; height: number } {
   const width = 1200;
   const height = 630;
+
+  /*
+   * Gambar bawaan situs berbentuk bujur sangkar 1200x1200, sedangkan foto
+   * artikel dibuat 1200x630. Dimensinya harus dilaporkan apa adanya: kalau
+   * gambar kotak diakui 630, WhatsApp menyiapkan bingkai selebar itu lalu
+   * mendapati isinya lebih tinggi, dan sebagian klien memilih tidak
+   * menampilkan gambarnya sama sekali.
+   */
+  if (url.includes('/og-default.jpg')) {
+    return { url, width: 1200, height: 1200 };
+  }
+
   const marker = '/upload/';
   if (url.includes('res.cloudinary.com') && url.includes(marker)) {
     const idx = url.indexOf(marker) + marker.length;
@@ -183,12 +195,12 @@ export default async function middleware(request: Request) {
       title: 'Wibawa dalam setiap Berita',
       type: 'website',
       description:
-        'Wibawa dalam setiap Berita — PABEN.ID menyajikan berita faktual, ' +
-        'terpercaya, dan terkini seputar nasional, ekonomi, olahraga, ' +
-        'teknologi, hiburan, daerah, dan opini.',
-      image: `${origin}/og-default.jpg`,
+        'Wibawa dalam setiap Berita. PABEN.ID mewartakan kabar nasional, ' +
+        'ekonomi, olahraga, teknologi, hiburan, daerah, dan opini — ' +
+        'dilaporkan cermat dan bertanggung jawab.',
+      image: `${origin}/og-default.jpg?v=2`,
       imageWidth: 1200,
-      imageHeight: 630,
+      imageHeight: 1200,
       url: url.toString(),
     });
 
@@ -224,7 +236,7 @@ export default async function middleware(request: Request) {
 
     // Kalau artikel tidak punya gambar, pakai gambar bawaan dari domain yang
     // sedang diakses — bukan dari konstanta SITE_URL yang bisa saja belum aktif.
-    const gambar = article.imageUrl || `${origin}/og-default.jpg`;
+    const gambar = article.imageUrl || `${origin}/og-default.jpg?v=2`;
     const { url: ogImage, width, height } = toWhatsAppFriendlyImage(gambar);
 
     const html = renderHtml({

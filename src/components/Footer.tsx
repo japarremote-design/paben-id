@@ -42,9 +42,8 @@ export const Footer: React.FC<FooterProps> = ({ categories, onSelectCategory, on
             Wibawa dalam setiap Berita
           </p>
           <p className="text-stone-400 leading-relaxed">
-            Berita faktual, terpercaya, dan terkini seputar nasional, ekonomi,
-            olahraga, teknologi, hiburan, daerah, dan opini — dengan wibawa di
-            setiap beritanya.
+            Mewartakan kabar nasional, ekonomi, olahraga, teknologi, hiburan,
+            daerah, dan opini — dilaporkan cermat dan bertanggung jawab.
           </p>
           <p className="mt-auto text-stone-500 font-mono text-[11px] pt-4">
             © 2026 PABEN.ID. All Rights Reserved.

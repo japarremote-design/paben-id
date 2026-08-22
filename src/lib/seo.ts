@@ -19,10 +19,21 @@ import { useEffect } from 'react';
  */
 
 const SITE_NAME = 'PABEN.ID';
+/*
+ * Deskripsi bawaan situs.
+ *
+ * Kalimatnya harus SAMA PERSIS dengan yang ada di index.html, middleware.ts,
+ * dan api/_firestore.js. Kalau berbeda, satu halaman bisa punya dua deskripsi
+ * yang bersaing tergantung siapa yang membacanya — perayap pratinjau membaca
+ * middleware, Googlebot membaca yang dipasang hook ini.
+ *
+ * Jangan pakai bentukan "berita faktual & terupdate" atau turunannya. Itu
+ * tagline PASEK.ID, basis codebase ini, bukan milik PABEN.ID.
+ */
 const DEFAULT_DESC =
-  'Wibawa dalam setiap Berita — PABEN.ID menyajikan berita faktual, ' +
-  'terpercaya, dan terkini seputar nasional, ekonomi, olahraga, teknologi, ' +
-  'hiburan, daerah, dan opini.';
+  'Wibawa dalam setiap Berita. PABEN.ID mewartakan kabar nasional, ekonomi, ' +
+  'olahraga, teknologi, hiburan, daerah, dan opini — dilaporkan cermat dan ' +
+  'bertanggung jawab.';
 
 export interface SeoOptions {
   /** Judul halaman TANPA " - PABEN.ID" — bagian itu ditambahkan di sini. */
@@ -65,7 +76,7 @@ export function useSeo(opts: SeoOptions) {
     const desc = description?.trim() || DEFAULT_DESC;
     const origin = window.location.origin;
     const canonical = origin + (path || window.location.pathname);
-    const gambar = image || `${origin}/og-default.jpg`;
+    const gambar = image || `${origin}/og-default.jpg?v=2`;
 
     document.title = fullTitle;
 

@@ -53,10 +53,26 @@ dan seterusnya.
 
 Tagline: *Wibawa dalam setiap Berita*
 
-Slogan ini juga jadi pembuka deskripsi meta di semua halaman, jadi tertulis
-"Wibawa dalam setiap Berita — PABEN.ID menyajikan berita faktual, terpercaya,
-dan terkini seputar ...". Diubah di `src/lib/seo.ts`, `index.html`,
-`middleware.ts`, dan `api/_firestore.js` — keempatnya harus sama.
+Slogan ini juga jadi pembuka deskripsi meta di semua halaman dan kalimat utama
+di `og-default.jpg`.
+
+> **Jangan pakai "berita faktual & terupdate" atau turunannya** — termasuk
+> "faktual, terpercaya, terkini". Itu tagline **PASEK.ID**, basis codebase ini,
+> bukan milik PABEN.ID. Frasa itu sempat menyusup ke gambar OG dan deskripsi
+> meta lewat rebrand, dan baru ketahuan setelah tautannya dibagikan ke
+> Telegram.
+
+Deskripsi meta bawaan tertulis di **empat** tempat dan **harus sama persis**:
+
+| Berkas | Dibaca oleh |
+|---|---|
+| `index.html` | pemuatan awal, sebelum React jalan |
+| `src/lib/seo.ts` | Googlebot & pembaca (setelah React jalan) |
+| `middleware.ts` | perayap pratinjau — WhatsApp, Telegram, X |
+| `api/_firestore.js` | umpan RSS |
+
+Kalau salah satu berbeda, satu halaman bisa punya dua deskripsi yang bersaing
+tergantung siapa yang membacanya.
 
 Aset logo ada di `public/`, semuanya digambar ulang dari spesifikasi Glass
 Bold (kotak jingga radius 15/64, huruf P Barlow Condensed 800 putih digeser
@@ -68,7 +84,23 @@ Bold (kotak jingga radius 15/64, huruf P Barlow Condensed 800 putih digeser
 - `logo-wordmark-plain.png` — lockup tanpa tagline, untuk tempat sangat sempit
 - `logo-icon-512.png` — ikon aplikasi
 - `favicon.ico`, `favicon-32.png`, `apple-touch-icon.png`
-- `og-default.jpg` — gambar OG default 1200×630
+- `og-default.jpg` — kartu merek OG, **bujur sangkar 1200×1200** (gaya kartu
+  merek seperti detik.com)
+
+> **Kenapa kotak, dan kenapa lockup-nya di tengah.** Telegram menampilkan
+> gambar 1:1 utuh dan besar; WhatsApp, Facebook, dan X memotongnya ke 1,91:1
+> dari tengah. Karena itu seluruh logo, wordmark, dan slogan ditaruh di pita
+> tengah setinggi 628px (1200 ÷ 1,91) — **jangan taruh apa pun yang penting di
+> luar pita itu**, karena di WhatsApp bagian atas dan bawah hilang.
+>
+> Foto artikel tetap 1200×630 lewat transformasi Cloudinary. `middleware.ts`
+> melaporkan dimensi yang benar untuk masing-masing: gambar kotak diakui
+> 1200×1200, foto artikel 1200×630. Kalau gambar kotak diakui 630, sebagian
+> klien WhatsApp memilih tidak menampilkan gambarnya sama sekali.
+>
+> Alamat gambar memakai `?v=2`. Facebook dan Telegram menyimpan pratinjau
+> berdasarkan ALAMAT, jadi **naikkan angkanya setiap kali gambarnya diganti** —
+> di `index.html`, `middleware.ts`, dan `src/lib/seo.ts` sekaligus.
 
 `src/components/PabenMark.tsx` adalah versi SVG monogram yang sama, dipakai
 inline di byline artikel supaya tetap tajam di ukuran kecil.

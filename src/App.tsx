@@ -403,8 +403,8 @@ export default function App({
       ? {
           title: `Berita ${matchedKanal}`,
           description:
-            `Kumpulan berita ${matchedKanal} terbaru di PABEN.ID — faktual, ` +
-            'terpercaya, dan terkini.',
+            `Kabar ${matchedKanal.toLowerCase()} terbaru di PABEN.ID — ` +
+            'dilaporkan cermat dan bertanggung jawab.',
           path: `/kanal/${slugifyCategory(matchedKanal)}`,
           jsonLd: {
             '@context': 'https://schema.org',
