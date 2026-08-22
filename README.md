@@ -36,8 +36,13 @@ memakai tinta hangat — oranye versi lama terlalu terang untuk blok luas.
 > Jingga Tua mencapai 5,6:1. Garis bawahnya tetap Jingga Redaksi karena
 > elemen grafis cukup 3:1.
 >
-> Tagline di lockup dinaikkan dari 11.5u ke 13.5u dan warnanya digelapkan ke
-> Abu Teks — pada tinggi header versi 11.5u terlalu samar untuk dibaca.
+> Tagline dinaikkan dari 11.5u ke 14u, bobotnya dari italic 400 ke **italic
+> 600**, dan warnanya digelapkan dari Abu Teks ke tinta `#2D2623`. Versi 400
+> terlalu tipis di ukuran header — hurufnya pecah dan slogannya kehilangan
+> wibawa yang justru jadi isi kalimatnya. Bobot ini dipakai di dua tempat dan
+> harus tetap sama: aset PNG (`public/logo-wordmark.png`) dan kelas
+> `.font-tagline` di `src/index.css`. Bobot 600 juga harus ikut dimuat di
+> tautan Google Fonts pada `index.html`.
 
 Tokennya didefinisikan sekali di `src/index.css` (blok `@theme`), jadi bisa
 dipakai sebagai utility Tailwind: `bg-jingga`, `text-tinta`, `border-garis`,
@@ -49,7 +54,7 @@ dan seterusnya.
 |---|---|---|
 | Barlow Condensed | 800 | wordmark & judul |
 | Barlow | 400/600 | navigasi & antarmuka |
-| Newsreader | italic 400 | tagline & kutipan |
+| Newsreader | italic **600** | tagline & kutipan |
 
 Tagline: *Wibawa dalam setiap Berita*
 
@@ -80,7 +85,8 @@ Bold (kotak jingga radius 15/64, huruf P Barlow Condensed 800 putih digeser
 
 - `logo-wordmark.png` — lockup utama: monogram + PABEN.ID + tagline. Proporsi
   dari dokumen (monogram 64u, wordmark 22u, jarak 14u), kecuali tagline yang
-  dinaikkan ke 13.5u dan digelapkan agar terbaca di tinggi header 68px
+  dinaikkan ke 14u, ditebalkan ke italic 600, dan digelapkan agar tegas di
+  tinggi header 68px
 - `logo-wordmark-plain.png` — lockup tanpa tagline, untuk tempat sangat sempit
 - `logo-icon-512.png` — ikon aplikasi
 - `favicon.ico`, `favicon-32.png`, `apple-touch-icon.png`

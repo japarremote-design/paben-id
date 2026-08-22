@@ -48,6 +48,13 @@ h1, h2, h3, .font-display {
 .font-tagline {
   font-family: var(--font-serif);
   font-style: italic;
+  /*
+   * Bobot 600, bukan 400 seperti di dokumen identitas.
+   * Newsreader italic 400 terlalu tipis untuk ukuran slogan: hurufnya pecah
+   * dan kalimatnya kehilangan wibawa yang justru jadi isinya. Aset logo
+   * memakai bobot yang sama supaya slogan di header dan di footer seragam.
+   */
+  font-weight: 600;
 }
 
 @keyframes ticker {

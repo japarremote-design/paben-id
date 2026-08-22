@@ -38,7 +38,7 @@ export const Footer: React.FC<FooterProps> = ({ categories, onSelectCategory, on
           >
             PABEN<span className="text-[#fa9d68]">.ID</span>
           </button>
-          <p className="font-tagline text-stone-400 text-sm -mt-1">
+          <p className="font-tagline text-[#fa9d68] text-[15px] -mt-1">
             Wibawa dalam setiap Berita
           </p>
           <p className="text-stone-400 leading-relaxed">
