@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="font-sans sticky top-0 z-50 border-b-4 border-[#e15b00] shadow-md">
       {/* Pita atas: latar putih, logo tampil apa adanya tanpa alas tambahan */}
       <div className="bg-white border-b border-stone-200">
-      <div className="flex justify-between items-center h-20 px-4 md:px-6 max-w-7xl mx-auto">
+      <div className="flex justify-between items-center h-24 px-4 md:px-6 max-w-7xl mx-auto">
         {/* Logo & Brand */}
         <div 
           className="flex items-center gap-3 cursor-pointer select-none flex-shrink-0"
@@ -84,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
             decoding="async"
             src={logoUrl}
             alt="PABEN.ID - Wibawa dalam setiap Berita"
-            className="h-11 sm:h-12 md:h-14 w-auto object-contain hover:scale-105 transition-transform"
+            className="h-14 sm:h-16 md:h-[68px] w-auto object-contain hover:scale-105 transition-transform"
           />
         </div>
 
@@ -244,18 +244,28 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
       </div>
 
-      {/* Pita kategori: navy, jadi penanda visual antara identitas dan navigasi */}
-      <div className="bg-[#170c0a] text-white">
-      <nav className="hidden lg:flex flex-wrap gap-x-6 gap-y-2 items-center px-4 md:px-6 py-2.5 max-w-7xl mx-auto">
+      {/*
+        Pita kanal — Jingga Tipis.
+
+        Warnanya nyaris sama terang dengan latar halaman (Kertas), jadi yang
+        memisahkan keduanya adalah garis jingga 4px di bawah <header> dan garis
+        putih di atas, bukan kontras warnanya sendiri.
+
+        Kanal dirata-tengahkan dan memakai flex-wrap, jadi menambah atau
+        mengurangi kanal dari panel admin tidak perlu penyesuaian apa pun —
+        barisnya melipat sendiri kalau sudah tidak muat.
+      */}
+      <div className="bg-[#ffece0] border-t border-white">
+      <nav className="hidden lg:flex flex-wrap justify-center gap-x-7 gap-y-2 items-center px-4 md:px-6 py-3 max-w-7xl mx-auto">
         <button
           onClick={() => {
             onSelectCategory('Semua');
             onGoHome();
           }}
-          className={`text-sm font-semibold text-white transition-colors duration-200 cursor-pointer active:scale-95 ${
+          className={`text-sm transition-colors duration-200 cursor-pointer active:scale-95 ${
             selectedCategory === 'Semua'
-              ? 'border-b-2 border-[#e15b00] pb-0.5'
-              : 'hover:text-[#fa9d68]'
+              ? 'font-bold text-[#a63c00] border-b-2 border-[#e15b00] pb-0.5'
+              : 'font-semibold text-[#170c0a] hover:text-[#a63c00]'
           }`}
         >
           Beranda
@@ -267,10 +277,16 @@ export const Header: React.FC<HeaderProps> = ({
               onSelectCategory(cat);
               onGoHome();
             }}
-            className={`text-sm font-semibold text-white transition-colors duration-200 cursor-pointer active:scale-95 ${
+            /*
+             * Kanal aktif memakai Jingga Tua, bukan Jingga Redaksi.
+             * Jingga Redaksi di atas Jingga Tipis hanya 3,2:1 — di bawah
+             * ambang 4,5:1 untuk teks. Jingga Tua mencapai 5,6:1. Garis
+             * bawahnya tetap Jingga Redaksi karena elemen grafis cukup 3:1.
+             */
+            className={`text-sm transition-colors duration-200 cursor-pointer active:scale-95 ${
               selectedCategory === cat
-                ? 'border-b-2 border-[#e15b00] pb-0.5'
-                : 'hover:text-[#fa9d68]'
+                ? 'font-bold text-[#a63c00] border-b-2 border-[#e15b00] pb-0.5'
+                : 'font-semibold text-[#170c0a] hover:text-[#a63c00]'
             }`}
           >
             {cat}

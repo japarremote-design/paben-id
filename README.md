@@ -24,6 +24,21 @@ konsep logo **nomor 1: Glass Bold**.
 hanya di monogram, tombol langganan, dan label TERKINI. Bidang besar lain
 memakai tinta hangat — oranye versi lama terlalu terang untuk blok luas.
 
+> **Menyimpang dari dokumen:** pita kanal memakai **Jingga Tipis** `#FFECE0`
+> dengan teks Tinta, bukan blok Tinta seperti di dokumen. Ini permintaan
+> pemilik situs. Konsekuensinya: Jingga Tipis hampir sama terang dengan
+> Kertas (kontras 1,06:1), jadi yang memisahkan pita dari isi halaman adalah
+> garis jingga 4px di bawah `<header>` — **jangan dihapus**, tanpa garis itu
+> pita kanalnya melebur ke latar.
+>
+> Kanal aktif memakai **Jingga Tua** `#A63C00`, bukan Jingga Redaksi. Jingga
+> Redaksi di atas Jingga Tipis hanya 3,2:1, di bawah ambang 4,5:1 untuk teks;
+> Jingga Tua mencapai 5,6:1. Garis bawahnya tetap Jingga Redaksi karena
+> elemen grafis cukup 3:1.
+>
+> Tagline di lockup dinaikkan dari 11.5u ke 13.5u dan warnanya digelapkan ke
+> Abu Teks — pada tinggi header versi 11.5u terlalu samar untuk dibaca.
+
 Tokennya didefinisikan sekali di `src/index.css` (blok `@theme`), jadi bisa
 dipakai sebagai utility Tailwind: `bg-jingga`, `text-tinta`, `border-garis`,
 dan seterusnya.
@@ -38,13 +53,18 @@ dan seterusnya.
 
 Tagline: *Wibawa dalam setiap Berita*
 
+Slogan ini juga jadi pembuka deskripsi meta di semua halaman, jadi tertulis
+"Wibawa dalam setiap Berita — PABEN.ID menyajikan berita faktual, terpercaya,
+dan terkini seputar ...". Diubah di `src/lib/seo.ts`, `index.html`,
+`middleware.ts`, dan `api/_firestore.js` — keempatnya harus sama.
+
 Aset logo ada di `public/`, semuanya digambar ulang dari spesifikasi Glass
 Bold (kotak jingga radius 15/64, huruf P Barlow Condensed 800 putih digeser
 2/64 ke bawah untuk keseimbangan optis, sorot tipis di tepi atas):
 
-- `logo-wordmark.png` — lockup utama: monogram + PABEN.ID + tagline. Proporsinya
-  persis mengikuti dokumen (monogram 64u, wordmark 22u, tagline 11.5u, jarak 14u)
-  supaya tagline tetap terbaca di tinggi header
+- `logo-wordmark.png` — lockup utama: monogram + PABEN.ID + tagline. Proporsi
+  dari dokumen (monogram 64u, wordmark 22u, jarak 14u), kecuali tagline yang
+  dinaikkan ke 13.5u dan digelapkan agar terbaca di tinggi header 68px
 - `logo-wordmark-plain.png` — lockup tanpa tagline, untuk tempat sangat sempit
 - `logo-icon-512.png` — ikon aplikasi
 - `favicon.ico`, `favicon-32.png`, `apple-touch-icon.png`

@@ -41,7 +41,7 @@ export function siteUrlFrom(req) {
 export const SITE_URL = (process.env.SITE_URL || SITE_URL_FALLBACK).replace(/\/$/, '');
 export const SITE_NAME = 'PABEN.ID';
 export const SITE_DESC =
-  'PABEN.ID menyajikan berita faktual, terpercaya, dan terkini seputar nasional, ekonomi, olahraga, teknologi, hiburan, daerah, dan opini.';
+  'Wibawa dalam setiap Berita — PABEN.ID menyajikan berita faktual, terpercaya, dan terkini seputar nasional, ekonomi, olahraga, teknologi, hiburan, daerah, dan opini.';
 
 function nilai(field) {
   if (!field) return undefined;

@@ -20,8 +20,9 @@ import { useEffect } from 'react';
 
 const SITE_NAME = 'PABEN.ID';
 const DEFAULT_DESC =
-  'PABEN.ID menyajikan berita faktual, terpercaya, dan terkini seputar ' +
-  'nasional, ekonomi, olahraga, teknologi, hiburan, daerah, dan opini.';
+  'Wibawa dalam setiap Berita — PABEN.ID menyajikan berita faktual, ' +
+  'terpercaya, dan terkini seputar nasional, ekonomi, olahraga, teknologi, ' +
+  'hiburan, daerah, dan opini.';
 
 export interface SeoOptions {
   /** Judul halaman TANPA " - PABEN.ID" — bagian itu ditambahkan di sini. */

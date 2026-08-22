@@ -92,7 +92,7 @@ async function fetchArticle(articleId: string) {
 
   return {
     title: stripFirestoreValue(fields.title) ?? SITE_NAME,
-    excerpt: stripFirestoreValue(fields.excerpt) ?? 'Berita Faktual, Terpercaya, Terkini',
+    excerpt: stripFirestoreValue(fields.excerpt) ?? 'Wibawa dalam setiap Berita',
     imageUrl: stripFirestoreValue(fields.imageUrl) ?? DEFAULT_IMAGE,
     category: stripFirestoreValue(fields.category) ?? '',
   };
@@ -183,8 +183,9 @@ export default async function middleware(request: Request) {
       title: 'Wibawa dalam setiap Berita',
       type: 'website',
       description:
-        'PABEN.ID menyajikan berita faktual, terpercaya, dan terkini seputar ' +
-        'nasional, ekonomi, olahraga, teknologi, hiburan, daerah, dan opini.',
+        'Wibawa dalam setiap Berita — PABEN.ID menyajikan berita faktual, ' +
+        'terpercaya, dan terkini seputar nasional, ekonomi, olahraga, ' +
+        'teknologi, hiburan, daerah, dan opini.',
       image: `${origin}/og-default.jpg`,
       imageWidth: 1200,
       imageHeight: 630,
