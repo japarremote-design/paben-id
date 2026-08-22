@@ -29,9 +29,15 @@ export const Footer: React.FC<FooterProps> = ({ categories, onSelectCategory, on
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-6 py-10 max-w-7xl mx-auto text-xs md:text-sm">
         {/* Brand & Description */}
         <div className="flex flex-col gap-3">
-          <span className="font-black text-xl text-white tracking-tight font-display uppercase">
+          <button
+            onClick={() => {
+              onGoHome();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="font-black text-xl text-white tracking-tight font-display uppercase text-left w-fit cursor-pointer hover:text-[#fa9d68] transition-colors"
+          >
             PABEN<span className="text-[#fa9d68]">.ID</span>
-          </span>
+          </button>
           <p className="font-tagline text-stone-400 text-sm -mt-1">
             Wibawa dalam setiap Berita
           </p>
@@ -66,8 +72,6 @@ export const Footer: React.FC<FooterProps> = ({ categories, onSelectCategory, on
                 key={cat}
                 onClick={() => {
                   onSelectCategory(cat as CategoryType);
-                  onGoHome();
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 className="text-left hover:text-[#e15b00] transition-colors flex items-center gap-1 cursor-pointer"
               >

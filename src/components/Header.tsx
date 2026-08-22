@@ -66,17 +66,14 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="font-sans sticky top-0 z-50 border-b-4 border-[#e15b00] shadow-md">
+    <header className="font-sans sticky top-0 z-50 border-t-4 border-b-4 border-[#e15b00] shadow-md">
       {/* Pita atas: latar putih, logo tampil apa adanya tanpa alas tambahan */}
       <div className="bg-white border-b border-stone-200">
       <div className="flex justify-between items-center h-24 px-4 md:px-6 max-w-7xl mx-auto">
         {/* Logo & Brand */}
         <div 
           className="flex items-center gap-3 cursor-pointer select-none flex-shrink-0"
-          onClick={() => {
-            onSelectCategory('Semua');
-            onGoHome();
-          }}
+          onClick={onGoHome}
         >
           <img
             loading="eager"
@@ -258,10 +255,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="bg-[#ffece0] border-t border-white">
       <nav className="hidden lg:flex flex-wrap justify-center gap-x-7 gap-y-2 items-center px-4 md:px-6 py-3 max-w-7xl mx-auto">
         <button
-          onClick={() => {
-            onSelectCategory('Semua');
-            onGoHome();
-          }}
+          onClick={() => onSelectCategory('Semua')}
           className={`text-sm transition-colors duration-200 cursor-pointer active:scale-95 ${
             selectedCategory === 'Semua'
               ? 'font-bold text-[#a63c00] border-b-2 border-[#e15b00] pb-0.5'
@@ -273,10 +267,7 @@ export const Header: React.FC<HeaderProps> = ({
         {categories.map((cat) => (
           <button
             key={cat}
-            onClick={() => {
-              onSelectCategory(cat);
-              onGoHome();
-            }}
+            onClick={() => onSelectCategory(cat)}
             /*
              * Kanal aktif memakai Jingga Tua, bukan Jingga Redaksi.
              * Jingga Redaksi di atas Jingga Tipis hanya 3,2:1 — di bawah
@@ -324,7 +315,6 @@ export const Header: React.FC<HeaderProps> = ({
                   <button
                     onClick={() => {
                       onSelectCategory('Semua');
-                      onGoHome();
                       setMobileSheet(null);
                     }}
                     className={`p-2.5 rounded-lg text-left text-sm font-semibold ${
@@ -338,7 +328,6 @@ export const Header: React.FC<HeaderProps> = ({
                       key={cat}
                       onClick={() => {
                         onSelectCategory(cat);
-                        onGoHome();
                         setMobileSheet(null);
                       }}
                       className={`p-2.5 rounded-lg text-left text-sm font-semibold ${

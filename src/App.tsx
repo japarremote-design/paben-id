@@ -147,8 +147,19 @@ export default function App({
   const kanalTidakDikenal =
     Boolean(kanalSlug) && !matchedKanal && activeCategoryNames.length > 0;
 
-  const selectCategory = (cat: CategoryType | 'Semua') =>
+  /*
+   * Pindah kanal.
+   *
+   * Gulir ke atas dilakukan di sini, bukan di tiap tombol. Sebelumnya tiap
+   * pemanggil menjalankan onSelectCategory() lalu onGoHome() berurutan —
+   * dan onGoHome() ikut memanggil navigate('/'), jadi navigasi ke kanal
+   * langsung ditimpa kembali ke beranda dan tombol kanal terlihat tidak
+   * merespons sama sekali.
+   */
+  const selectCategory = (cat: CategoryType | 'Semua') => {
     navigate(cat === 'Semua' ? '/' : `/kanal/${slugifyCategory(cat)}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const selectArticle = (article: Article) => navigate(articlePath(article));
   const goHome = () => navigate('/');
